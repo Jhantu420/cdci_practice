@@ -1,0 +1,48 @@
+name: MERN CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Self-hosted EC2 runner
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # ---------- FRONTEND ----------
+      - name: Install Frontend Dependencies
+        run: |
+          cd client
+          npm ci
+
+      # - name: Create Frontend .env (if needed)
+      #   run: |
+      #     echo "${{ secrets.FRONTEND_ENV }}" > client/.env
+
+      - name: Build Frontend
+        run: |
+          cd client
+          npm run build
+
+      - name: Deploy Frontend to NGINX
+        run: |
+          sudo rm -rf /var/www/html/*
+          sudo cp -r client/dist/* /var/www/html/
+
+      # ---------- BACKEND ----------
+      - name: Install Backend Dependencies
+        run: |
+          cd server
+          npm ci
+
+      - name: Setup .env for Backend
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > server/.env
+
+      - name: Restart Backend with PM2
+        run: |
+          cd server
+          pm2 restart all || pm2 start index.js --name mern-api

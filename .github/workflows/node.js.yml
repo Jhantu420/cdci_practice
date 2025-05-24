@@ -30,7 +30,7 @@ jobs:
       - name: Deploy Frontend to NGINX
         run: |
           sudo rm -rf /var/www/html/*
-          sudo cp -r client/build/* /var/www/html/
+          sudo cp -r client/dist/* /var/www/html/
 
       # ---------- BACKEND ----------
       - name: Install Backend Dependencies

@@ -35,7 +35,7 @@ const userRegister = async (req, res) => {
 
 const getUser = async (req, res) => {
   const data = await User.find().select("-password");
-  console.log("user data", data);
+  // console.log("user data", data);
   return res.json({
     message: "All user's data",
     data,
